@@ -1,0 +1,1 @@
+{:browser-repl true, :main first-project.core, :output-to "out/main.js", :output-dir "out", :aot-cache true}
