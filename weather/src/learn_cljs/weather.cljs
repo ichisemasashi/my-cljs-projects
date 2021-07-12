@@ -36,3 +36,16 @@
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
 )
+
+(def input (.createElement js/document "input"))
+(.appendChild (.-body js/document) input)
+(set! (.-placeholder input) "Enter something")
+;;(defn handle-input [e]
+;;  (swap! app-state assoc :text (-> e .-target .-value)))
+(defn event-value [e]
+  (-> e .-target .-value))
+(defn update-text [v]
+  (swap! app-state assoc :text v))
+(defn handle-input [e]
+  (update-text (event-value e)))
+(set! (.-onkeyup input) handle-input)
