@@ -9,21 +9,53 @@
 (defn multiply [a b] (* a b))
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:text "Hello world!"}))
+(defonce app-state (reagent/atom {:title "WhichWeather"
+                                  :postal-code ""
+                                  :temperatures {:today {:label "Today"
+                                                         :value nil}
+                                                 :tomorrow {:label "Tomorrow"
+                                                            :value nil}}}))
 
 (defn get-app-element []
   (gdom/getElement "app"))
 
 (defn hello-world []
   [:div
-   [:h1 "I say: " (:text @app-state)]])
+   [:h1 {:class "app-title"} "Hello, World"]])
+
+(defn title []
+  [:h1 (:title @app-state)])
+
+(defn temperature [temp]
+  [:div {:class "temperature"}
+   [:div {:class "value"}
+    (:value temp)]
+   [:h2 (:label temp)]])
+
+(defn postal-code []
+  [:div {:class "postal-code"}
+   [:h3 "Enter your postal code"]
+   [:input {:type "text"
+            :placeholder "Postal Code"
+            :value (:postal-code @app-state)}]
+   [:button "Go"]])
+
+(defn app []
+  [:div {:class "app"}
+   [title]
+   [:div {:class "temperatures"}
+    (for [temp (vals (:temperatures @app-state))]
+      [temperature temp])]
+   [postal-code]])
 
 (defn mount [el]
   (rdom/render [hello-world] el))
 
+;;(defn mount-app-element []
+;;  (when-let [el (get-app-element)]
+;;    (mount el)))
 (defn mount-app-element []
-  (when-let [el (get-app-element)]
-    (mount el)))
+  (rdom/render [app] (gdom/getElement "app")))
 
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
