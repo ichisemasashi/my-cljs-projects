@@ -7,16 +7,14 @@
 
 (defn multiply [a b] (* a b))
 
-(defn simple-component []
-  [:div
-   [:p "I am a component!"]
-   [:p.someclass
-    "I have " [:strong "bold"]
-    [:span {:style {:color "red"}} " and red "]
-    "text."]])
+(defn hello-component [name]
+  [:p "Hello, " name "!"])
+
+(defn say-hello []
+  [hello-component "world"])
 
 (defn mount []
-  (rdom/render [simple-component] (.-body js/document)))
+  (rdom/render [say-hello] (.-body js/document)))
 
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
