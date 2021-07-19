@@ -7,23 +7,20 @@
 
 (defn multiply [a b] (* a b))
 
-(defn hello-component [name]
-  [:p "Hello, " name "!"])
+(defn lister [items]
+  [:ul
+   (for [item items]
+     ^{:key item} [:li "Item " item])])
 
-(defn say-hello []
-  [hello-component "world"])
+(defn lister-user []
+  [:div
+   "Here is a list:"
+   [lister (range 3)]])
 
 (defn mount []
-  (rdom/render [say-hello] (.-body js/document)))
+  (rdom/render [lister-user] (.-body js/document)))
 
-;; conditionally start your application based on the presence of an "app" element
-;; this is particularly helpful for testing this ns without launching the app
 (mount)
 
-;; specify reload hook with ^;after-load metadata
 (defn ^:after-load on-reload []
-  (mount)
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
+  (mount))
