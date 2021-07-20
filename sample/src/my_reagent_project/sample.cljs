@@ -1,24 +1,24 @@
 (ns ^:figwheel-hooks my-reagent-project.sample
   (:require
-   [reagent.core :as reagent :refer [atom]]
+   [goog.dom :as gdom]
+   [reagent.core :as r :refer [atom]]
    [reagent.dom :as rdom]))
 
 (println "This text is printed from src/my_reagent_project/sample.cljs. Go ahead and edit it and see reloading in action.")
 
 (defn multiply [a b] (* a b))
 
-(defn lister [items]
-  [:ul
-   (for [item items]
-     ^{:key item} [:li "Item " item])])
+(def click-count (r/atom 0))
 
-(defn lister-user []
+(defn counting-component []
   [:div
-   "Here is a list:"
-   [lister (range 3)]])
+   "The atom " [:code "click-count"] " has value: "
+   @click-count ". "
+   [:input {:type "button" :value "Click me!"
+            :on-click #(swap! click-count inc)}]])
 
 (defn mount []
-  (rdom/render [lister-user] (.-body js/document)))
+  (rdom/render [counting-component] (gdom/getElement "app")))
 
 (mount)
 
