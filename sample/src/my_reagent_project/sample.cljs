@@ -8,14 +8,20 @@
 
 (defn multiply [a b] (* a b))
 
-(defn timer-component []
-  (let [seconds-elapsed (r/atom 0)]
+(defn atom-input [val]
+  [:input {:type "text"
+           :value @val
+           :on-change #(reset! val (-> % .-target .-value))}])
+
+(defn shared-state []
+  (let [val (r/atom "foo")]
     (fn []
-      (js/setTimeout #(swap! seconds-elapsed inc) 1000)
-      [:div "Seconds Elaspsed: " @seconds-elapsed])))
+      [:div
+       [:p "The value is now: " @val]
+       [:p "Change it here: " [atom-input val]]])))
 
 (defn mount []
-  (rdom/render [timer-component] (gdom/getElement "app")))
+  (rdom/render [shared-state] (gdom/getElement "app")))
 
 (mount)
 
