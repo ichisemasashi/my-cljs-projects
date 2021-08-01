@@ -8,20 +8,15 @@
 
 (defn multiply [a b] (* a b))
 
-(defn atom-input [val]
-  [:input {:type "text"
-           :value @val
-           :on-change #(reset! val (-> % .-target .-value))}])
-
-(defn shared-state []
-  (let [val (r/atom "foo")]
-    (fn []
-      [:div
-       [:p "The value is now: " @val]
-       [:p "Change it here: " [atom-input val]]])))
+(defn simple-component []
+  [:div
+   [:p "I am a component!"]
+   [:p.someclass
+    "I have " [:strong "bold"]
+    [:span {:style {:color "red"}} "and red "] "text."]])
 
 (defn mount []
-  (rdom/render [shared-state] (gdom/getElement "app")))
+  (rdom/render [simple-component] (gdom/getElement "app")))
 
 (mount)
 
