@@ -6,8 +6,6 @@
 
 (println "This text is printed from src/my_cljs_projects/analog_clock.cljs. Go ahead and edit it and see reloading in action.")
 
-(defn multiply [a b] (* a b))
-
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:text "Hello world!"}))
 
