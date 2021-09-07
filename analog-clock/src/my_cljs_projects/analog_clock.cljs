@@ -1,27 +1,22 @@
 (ns ^:figwheel-hooks my-cljs-projects.analog-clock
   (:require
-   [goog.dom :as gdom]
-   [reagent.core :as reagent :refer [atom]]
-   [reagent.dom :as rdom]))
+   [goog.dom :as gdom]))
 
 (println "This text is printed from src/my_cljs_projects/analog_clock.cljs. Go ahead and edit it and see reloading in action.")
 
 ;; div要素を取得
-(def view-elm (reagent/atom (gdom/getElement "app")))
+(def view-elm (atom (gdom/getElement "app")))
 
 ;; div要素の縦横の短い方を取得
 (def mini-side (min (.-clientWidth @view-elm) (.-clientHeight @view-elm)))
 ;; 時計の半径を取得
 (def hankei (/ mini-side 2))
 ;; キャンバスの作成
-(def cvs (reagent/atom (gdom/createElement "canvas")))
+(def cvs (atom (gdom/createElement "canvas")))
 
 ;; キャンバスの描画サイズセット
 (.setAttribute @cvs "width" mini-side)
 (.setAttribute @cvs "height" mini-side)
-
-;; キャンバスの描画コンテキストを取得
-(def context (reagent/atom (.getContext @cvs "2d")))
 
 ;; キャンバスのstyle要素設定関数
 (defn- set-cvs-style [cvs]
@@ -48,21 +43,6 @@
 ;; 描画の原点をキャンバスの中心にセット
 (.translate (.getContext @cvs "2d") hankei hankei)
 
-
-(defn div-with-canvas []
-  (let [m (js/parseInt mini-side)
-        h (js/parseInt (.-clientHeight @view-elm))
-        w (js/parseInt (.-clientWidth @view-elm))]
-     [:canvas {:width m, :height m
-               :style {:width (str m "px")
-                       :height (str m "px")
-                       :top (str (/ (- h m) 2) "px")
-                       :left (str (/ (- w m) 2) "px")
-                       :position "absolute"
-                       :boxSizing "border-box"
-                       :border "0"
-                       :padding "0 0 0 0"
-                       :margin "0 0 0 0"}}]))
 ;;;;;;;;;;;
 ;; 真ん中の円
 (defn mini-centerCircle [cvs r color]
@@ -168,14 +148,6 @@
 (defn clear-clock [cvs]
   (let [ctx (.getContext @cvs "2d")]
     (.clearRect ctx (- hankei) (- hankei) (* hankei 2) (* hankei 2))))
-
-(defn mount []
-  (rdom/render [div-with-canvas] (gdom/getElement "app")))
-
-;(js/setInterval mount 1000)
-
-;(defn ^:after-load on-reload []
-;  (mount))
 
 (defn rewrite-clock []
   ;; 画面の消去
