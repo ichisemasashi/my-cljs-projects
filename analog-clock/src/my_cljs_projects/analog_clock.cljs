@@ -129,6 +129,46 @@
   (.restore (.getContext @cvs "2d"))
   (scale-string cvs))
 
+;; 針の描画をおこなう
+(defn hand [tim cvs width color length-per hand-gap-per div-num]
+  (let [ctx (.getContext @cvs "2d")
+        top-position (- hankei outer-circle-width)
+        rotate-angle (* (/ js/Math.PI div-num) 2)]
+    (.save ctx)
+    (.beginPath ctx)
+    (set! (.-lineWidth ctx) width)
+    (set! (.-strokeStyle ctx) color)
+    (if (not= tim 0)
+      (.rotate ctx (* tim rotate-angle)))
+    (.moveTo ctx 0 (- (/ (* top-position length-per) 100)))
+    (.lineTo ctx 0 (/ (* top-position hand-gap-per) 100))
+    (.stroke ctx)
+    (.restore ctx)))
+
+;; 時刻情報を取得
+(defn get-time []
+  (nth (clojure.string/split (js/Date) " ") 4))
+(defn get-hour []
+  (js/parseInt (nth (clojure.string/split (get-time) ":") 0)))
+(defn get-min []
+  (js/parseInt (nth (clojure.string/split (get-time) ":") 1)))
+(defn get-sec []
+  (js/parseInt (nth (clojure.string/split (get-time) ":") 2)))
+
+(defn three-hands [cvs]
+  ;; 時針の描画
+  (hand (+ (* (mod (get-hour) 12) 60) (get-min))
+        cvs 10 "#000" 55 10 (* 12 60))
+  ;; 分針の描画
+  (hand (get-min) cvs 10 "#000" 80 10 60)
+  ;; 秒針の描画
+  (hand (get-sec) cvs 5 "#f00" 85 20 60))
+
+;; 画面の消去
+(defn clear-clock [cvs]
+  (let [ctx (.getContext @cvs "2d")]
+    (.clearRect ctx (- hankei) (- hankei) (* hankei 2) (* hankei 2))))
+
 (defn mount []
   (rdom/render [div-with-canvas] (gdom/getElement "app")))
 
@@ -137,11 +177,19 @@
 ;(defn ^:after-load on-reload []
 ;  (mount))
 
+(defn rewrite-clock []
+  ;; 画面の消去
+  (clear-clock cvs)
+  ;; 目盛りを描画
+  (all-scale cvs)
+  ;; 針を描く
+  (three-hands cvs)
+  ;; 中央の円を描画
+  (centerCircle cvs))
+
 (defn clock-main []
   ;; キャンバスをHTMLに追加
   (.appendChild @view-elm @cvs)
-  ;; 中央の円を描画
-  (centerCircle cvs)
-  ;; 目盛りを描画
-  (all-scale cvs))
+  (js/setInterval rewrite-clock 1000))
 
+(clock-main)
